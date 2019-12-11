@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Galeria de PDF</title>
+	<link rel="stylesheet" type="text/css" href="../css/materialize.min.css">
+</head>
+<body>
+	<nav></nav>
+	<section class="container">
+		<h1>Galeria de PDF</h1>
+		<div class="row" id="gallery">
+
+			<!--<canvas id="the-canvas" class="hide"></canvas>-->
+		</div>
+	</section>
+
+	<!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <canvas id="zoom"></canvas>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+<script src="http://mozilla.github.io/pdf.js/build/pdf.js"></script>
+<script src="../js/materialize.min.js"></script>
+<script type="text/javascript">
+// If absolute URL from the remote server is provided, configure the CORS
+// header on that server.
+
+
+// Loaded via <script> tag, create shortcut to access PDF.js exports.
+var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+// The workerSrc property shall be specified.
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'http://mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+
+var pdfList = [
+	'../pdfs/boletos.pdf',
+	'../pdfs/Exito.pdf',
+	'../pdfs/maquiavelo.pdf'
+];
+
+let gallery = document.getElementById("gallery");
+let i = 0;
+
+for(let url of pdfList) {
+	console.log(url);
+	//var url = '../pdfs/boletos.pdf';
+	let id = `pdf${i++}`;
+	var canvas = document.createElement('canvas')
+	canvas.setAttribute('id', id)
+	gallery.appendChild(canvas);
+
+	openPdf(url, id)
+}
+
+function openPdf(url, id, scale = 0.4){
+	// Asynchronous download of PDF
+	var loadingTask = pdfjsLib.getDocument(url);
+	loadingTask.promise.then(function(pdf) {
+	  console.log('PDF loaded');
+	  
+	  // Fetch the first page
+	  var pageNumber = 1;
+	  pdf.getPage(pageNumber).then(function(page) {
+	  	showPage(page, id, scale);
+	  });
+	}, function (reason) {
+	  // PDF loading error
+	  console.error(reason);
+	});
+}
+
+function showPage(page, id, scale) {
+	console.log('Page loaded');
+	    
+    //var scale = 0.4;
+    var viewport = page.getViewport({scale: scale});
+
+    // Prepare canvas using PDF page dimensions
+    var canvas = document.getElementById(id);
+    var context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render PDF page into canvas context
+    var renderContext = {
+      canvasContext: context,
+      viewport: viewport
+    };
+    var renderTask = page.render(renderContext);
+    renderTask.promise.then(function () {
+      console.log('Page rendered');
+    });
+}
+
+let ele = document.querySelector('.modal');
+let modal = M.Modal.init(ele, {});
+
+gallery.addEventListener('click', zoomPdf)
+
+function zoomPdf(e) {
+	if(e.target.tagName === 'CANVAS') {
+		let canvas = e.target;
+		let id = canvas.getAttribute('id')
+		let i = parseInt(id.slice(3));
+		openPdf(pdfList[i], 'zoom', 1);
+		modal.open();
+	}
+	
+}
+</script>
+</body>
+</html>	

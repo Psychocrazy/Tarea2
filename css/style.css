@@ -1,0 +1,44 @@
+@keyframes fondo {
+	100%{background-color: cyan;}
+}
+
+body{
+	animation: fondo;
+	animation-name: fondo;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	background-image: url('../img/fondo.jpg');
+	background-size: cover; 
+}
+}
+
+.container{
+	background-color: rgba(0,0,0,0.3);
+	margin-top: 10%;
+	border-radius: 10px;
+	width: 600px;
+	height: 300px;
+	color: blue;
+
+}
+
+.input-field{
+	margin-top: 5%;
+	margin-left: 2%;
+	margin-right: 2%;
+}
+
+.btn{
+	border-radius: 10px;
+
+}
+
+form{
+	color: White;
+}
+
+
+/**.fondo{
+	background-image: url(../img/fondo.jpg);
+	background-size: cover;
+}
